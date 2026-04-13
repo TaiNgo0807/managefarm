@@ -7,10 +7,16 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/farmers", require("./routes/farmerRoutes"));
-app.use("/api/farm-products", require("./routes/farmProductRoutes"));
+const gardenRoutes = require("./routes/gardenRoutes");
+app.use("/api/gardens", gardenRoutes);
 
-const PORT = process.env.PORT || 3000;
+const medicineRoutes = require("./routes/medicineRoutes");
+app.use("/api/medicines", medicineRoutes);
+
+const activityRoutes = require("./routes/activityRoutes");
+app.use("/api/activities", activityRoutes);
+
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`🚀 Server chạy ngon ơ tại port ${PORT} nha!`);
+  console.log(`🚀 Server đang quẩy tại port ${PORT}`);
 });
