@@ -16,6 +16,12 @@ app.use("/api/medicines", medicineRoutes);
 const activityRoutes = require("./routes/activityRoutes");
 app.use("/api/activities", activityRoutes);
 
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`🚀 Server đang quẩy tại port ${PORT}`);

@@ -9,11 +9,13 @@
   <body>
     <nav class="sidebar">
       <h2>🌱 GardenCare</h2>
+      <button onclick="toggleMenu()" class="menu-toggle">☰</button>
+
       <ul id="menu">
         <li><button onclick="showTab('dashboard')">🏠 Dashboard</button></li>
         <li><button onclick="showTab('add-garden')">➕ Thêm Vườn</button></li>
         <li>
-          <button onclick="showTab('add-medicine')">💊 Quản lý Thuốc</button>
+          <button onclick="showTab('add-medicine')">🧪🌱Quản lý Thuốc</button>
         </li>
         <li>
           <button onclick="showTab('add-activity')">📘 Ghi Sổ Tay</button>
@@ -31,6 +33,7 @@
               <th>ID Vườn</th>
               <th>Chủ Vườn</th>
               <th>Loại Cây</th>
+              <th>Dứt xổ nhụy</th>
               <th>Ngày thao tác cuối</th>
               <th>Trạng thái</th>
             </tr>
@@ -38,7 +41,6 @@
           <tbody></tbody>
         </table>
       </section>
-
       <section id="add-garden" class="tab-content">
         <h2>Thêm Vườn Mới</h2>
         <form id="form-garden" onsubmit="submitGarden(event)">
@@ -56,6 +58,14 @@
             placeholder="Số năm trồng"
             required
           />
+
+          <label
+            for="g-pollination"
+            style="color: var(--text-dark); font-size: 14px; font-weight: 500"
+            >Ngày kết thúc xổ nhụy (Nếu có):</label
+          >
+          <input type="date" id="g-pollination" />
+
           <button type="submit">Lưu Vườn</button>
         </form>
       </section>
@@ -76,27 +86,61 @@
 
       <section id="add-activity" class="tab-content">
         <h2>Ghi Nhận Chăm Sóc</h2>
-        <form id="form-activity" onsubmit="submitActivity(event)">
-          <input
-            type="text"
-            id="a-garden"
-            placeholder="ID Vườn (VD: V01)"
-            required
-          />
-          <select id="a-type" required>
-            <option value="Phun thuốc">Phun thuốc</option>
-            <option value="Bón phân">Bón phân</option>
-            <option value="Tưới gốc">Tưới gốc</option>
-          </select>
-          <input
-            type="number"
-            id="a-medicine"
-            placeholder="ID Thuốc (Để trống nếu bón/tưới)"
-          />
-          <input type="date" id="a-date" required />
-          <button type="submit">Ghi Sổ</button>
-        </form>
+
+        <div class="activity-container">
+          <form
+            id="form-activity"
+            class="activity-form"
+            onsubmit="submitActivity(event)"
+          >
+            <input type="hidden" id="a-garden-id" required />
+            <input type="hidden" id="a-medicine-id" />
+
+            <div class="selected-info">
+              <p>
+                Vườn đang chọn:
+                <strong id="display-garden" style="color: var(--primary-color)"
+                  >Chưa chọn</strong
+                >
+              </p>
+              <p>
+                Thuốc đang chọn:
+                <strong
+                  id="display-medicine"
+                  style="color: var(--primary-color)"
+                  >Chưa chọn (Không bắt buộc)</strong
+                >
+              </p>
+            </div>
+
+            <select id="a-type" required>
+              <option value="Phun thuốc">Phun thuốc</option>
+              <option value="Bón phân">Bón phân</option>
+              <option value="Tưới gốc">Tưới gốc</option>
+            </select>
+
+            <input type="date" id="a-date" required />
+
+            <button type="submit">Ghi Sổ</button>
+            <button type="button" class="btn-clear" onclick="clearMedicine()">
+              Bỏ chọn Thuốc
+            </button>
+          </form>
+
+          <div class="activity-lists">
+            <div class="list-box">
+              <h3>🌿 Chọn Vườn</h3>
+              <ul id="list-gardens" class="selectable-list"></ul>
+            </div>
+
+            <div class="list-box">
+              <h3>💊 Chọn Thuốc</h3>
+              <ul id="list-medicines" class="selectable-list"></ul>
+            </div>
+          </div>
+        </div>
       </section>
+
       <div id="garden-modal" class="modal-overlay">
         <div class="modal-content">
           <div class="modal-header">
