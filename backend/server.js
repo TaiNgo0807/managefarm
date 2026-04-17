@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const path = require("path");
 
 const app = express();
 app.use(cors());
@@ -24,5 +25,5 @@ app.get("*", (req, res) => {
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`🚀 Server đang quẩy tại port ${PORT}`);
+  console.log(`Server đang chạy tại port ${PORT}`);
 });
