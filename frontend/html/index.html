@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GardenCare - Quản lý Vườn</title>
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+    <nav class="sidebar">
+      <h2>🌱 GardenCare</h2>
+      <ul id="menu">
+        <li><button onclick="showTab('dashboard')">🏠 Dashboard</button></li>
+        <li><button onclick="showTab('add-garden')">➕ Thêm Vườn</button></li>
+        <li>
+          <button onclick="showTab('add-medicine')">💊 Quản lý Thuốc</button>
+        </li>
+        <li>
+          <button onclick="showTab('add-activity')">📘 Ghi Sổ Tay</button>
+        </li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <section id="dashboard" class="tab-content active">
+        <h2>Bảng Điều Khiển</h2>
+        <button onclick="loadDashboard()">🔄 Làm mới</button>
+        <table id="garden-table">
+          <thead>
+            <tr>
+              <th>ID Vườn</th>
+              <th>Chủ Vườn</th>
+              <th>Loại Cây</th>
+              <th>Ngày thao tác cuối</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section id="add-garden" class="tab-content">
+        <h2>Thêm Vườn Mới</h2>
+        <form id="form-garden" onsubmit="submitGarden(event)">
+          <input
+            type="text"
+            id="g-id"
+            placeholder="ID Vườn (VD: V01)"
+            required
+          />
+          <input type="text" id="g-owner" placeholder="Tên chủ vườn" required />
+          <input type="text" id="g-plant" placeholder="Loại cây" required />
+          <input
+            type="number"
+            id="g-year"
+            placeholder="Số năm trồng"
+            required
+          />
+          <button type="submit">Lưu Vườn</button>
+        </form>
+      </section>
+
+      <section id="add-medicine" class="tab-content">
+        <h2>Thêm Thuốc</h2>
+        <form id="form-medicine" onsubmit="submitMedicine(event)">
+          <input type="text" id="m-name" placeholder="Tên thuốc" required />
+          <input
+            type="number"
+            id="m-cycle"
+            placeholder="Chu kỳ nhắc (ngày)"
+            required
+          />
+          <button type="submit">Lưu Thuốc</button>
+        </form>
+      </section>
+
+      <section id="add-activity" class="tab-content">
+        <h2>Ghi Nhận Chăm Sóc</h2>
+        <form id="form-activity" onsubmit="submitActivity(event)">
+          <input
+            type="text"
+            id="a-garden"
+            placeholder="ID Vườn (VD: V01)"
+            required
+          />
+          <select id="a-type" required>
+            <option value="Phun thuốc">Phun thuốc</option>
+            <option value="Bón phân">Bón phân</option>
+            <option value="Tưới gốc">Tưới gốc</option>
+          </select>
+          <input
+            type="number"
+            id="a-medicine"
+            placeholder="ID Thuốc (Để trống nếu bón/tưới)"
+          />
+          <input type="date" id="a-date" required />
+          <button type="submit">Ghi Sổ</button>
+        </form>
+      </section>
+      <div id="garden-modal" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modal-title">Chi tiết Vườn</h2>
+            <button class="close-btn" onclick="closeModal()">✖</button>
+          </div>
+          <table id="history-table">
+            <thead>
+              <tr>
+                <th>Tên Thuốc</th>
+                <th>Ngày thao tác</th>
+                <th>Đã qua (ngày)</th>
+              </tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <script src="../js/main.js"></script>
+  </body>
+</html>
