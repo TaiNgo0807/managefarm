@@ -20,10 +20,18 @@ exports.getDashboard = async (req, res) => {
     const [rows] = await db.execute(query);
 
     // Phân loại trạng thái (Logic chính ông cần)
+    // Phân loại trạng thái đã được fix lỗi null
+    // Phân loại trạng thái chuẩn xác hơn
     const result = rows.map((row) => {
-      let status = "🟢 Bình thường";
-      if (row.days_left < 0) status = "🔴 Quá hạn";
-      else if (row.days_left <= 2) status = "🟡 Sắp tới hạn"; // Sắp tới hạn trong 2 ngày
+      // Mặc định khi mới thêm vườn (chưa có thuốc)
+      let status = "⚪ Chưa có thuốc";
+
+      // Nếu ĐÃ CÓ lịch sử dùng thuốc (days_left khác null)
+      if (row.days_left !== null && row.days_left !== undefined) {
+        status = "🟢 Bình thường"; // Cấp mác bình thường trước
+        if (row.days_left < 0) status = "🔴 Quá hạn";
+        else if (row.days_left <= 2) status = "🟡 Sắp tới hạn";
+      }
 
       return { ...row, status };
     });
@@ -66,6 +74,18 @@ exports.getAllGardens = async (req, res) => {
       "SELECT id, owner_name, plant_type FROM gardens",
     );
     res.json({ success: true, data: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+exports.deleteGarden = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Xóa các hoạt động của vườn này trước
+    await db.execute("DELETE FROM activities WHERE garden_id = ?", [id]);
+    // Sau đó mới xóa vườn
+    await db.execute("DELETE FROM gardens WHERE id = ?", [id]);
+    res.json({ success: true, message: "Đã tiễn vườn lên đường!" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

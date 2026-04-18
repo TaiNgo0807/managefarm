@@ -4,21 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GardenCare - Quản lý Vườn</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../assets/favicon_io/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/favicon_io/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/xfavicon_io/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../assets/favicon_io/site.webmanifest" />
+
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
     <nav class="sidebar">
-      <h2>🌱 GardenCare</h2>
+      <h2>Quản lý Vườn VS</h2>
       <button onclick="toggleMenu()" class="menu-toggle">☰</button>
 
       <ul id="menu">
-        <li><button onclick="showTab('dashboard')">🏠 Dashboard</button></li>
-        <li><button onclick="showTab('add-garden')">➕ Thêm Vườn</button></li>
+        <li><button onclick="showTab('dashboard')">Trang chủ</button></li>
+        <li><button onclick="showTab('add-garden')">Thêm Vườn</button></li>
         <li>
-          <button onclick="showTab('add-medicine')">🧪🌱Quản lý Thuốc</button>
+          <button onclick="showTab('add-medicine')">Thêm thuốc/phân bón</button>
         </li>
         <li>
-          <button onclick="showTab('add-activity')">📘 Ghi Sổ Tay</button>
+          <button onclick="showTab('add-activity')">Ghi Nhận Chăm Sóc</button>
         </li>
       </ul>
     </nav>
@@ -26,15 +45,15 @@
     <main class="content">
       <section id="dashboard" class="tab-content active">
         <h2>Bảng Điều Khiển</h2>
-        <button onclick="loadDashboard()">🔄 Làm mới</button>
+        <button class="refresh-btn" onclick="loadDashboard()">Làm mới</button>
         <table id="garden-table">
           <thead>
             <tr>
               <th>ID Vườn</th>
               <th>Chủ Vườn</th>
               <th>Loại Cây</th>
-              <th>Dứt xổ nhụy</th>
-              <th>Ngày thao tác cuối</th>
+              <th>Ngày dứt xổ nhụy</th>
+              <th>Ngày sử dụng thuốc cuối</th>
               <th>Trạng thái</th>
             </tr>
           </thead>
@@ -42,46 +61,150 @@
         </table>
       </section>
       <section id="add-garden" class="tab-content">
-        <h2>Thêm Vườn Mới</h2>
-        <form id="form-garden" onsubmit="submitGarden(event)">
-          <input
-            type="text"
-            id="g-id"
-            placeholder="ID Vườn (VD: V01)"
-            required
-          />
-          <input type="text" id="g-owner" placeholder="Tên chủ vườn" required />
-          <input type="text" id="g-plant" placeholder="Loại cây" required />
-          <input
-            type="number"
-            id="g-year"
-            placeholder="Số năm trồng"
-            required
-          />
+        <h2>Quản Lý Vườn</h2>
 
-          <label
-            for="g-pollination"
-            style="color: var(--text-dark); font-size: 14px; font-weight: 500"
-            >Ngày kết thúc xổ nhụy (Nếu có):</label
+        <div style="display: flex; gap: 30px; align-items: flex-start">
+          <form
+            id="form-garden"
+            onsubmit="submitGarden(event)"
+            style="
+              flex: 1;
+              background: white;
+              padding: 25px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            "
           >
-          <input type="date" id="g-pollination" />
+            <h3
+              style="
+                margin-bottom: 20px;
+                font-size: 18px;
+                color: var(--primary-color);
+              "
+            >
+              ➕ Thêm Vườn Mới
+            </h3>
 
-          <button type="submit">Lưu Vườn</button>
-        </form>
+            <input
+              type="text"
+              id="g-id"
+              placeholder="ID Vườn (VD: V01)"
+              required
+            />
+            <input
+              type="text"
+              id="g-owner"
+              placeholder="Tên chủ vườn"
+              required
+            />
+            <input type="text" id="g-plant" placeholder="Loại cây" required />
+            <input
+              type="number"
+              id="g-year"
+              placeholder="Số năm trồng"
+              required
+            />
+
+            <label
+              for="g-pollination"
+              style="color: var(--text-dark); font-size: 14px; font-weight: 500"
+              >Ngày dứt xổ nhụy (Nếu có):</label
+            >
+            <input type="date" id="g-pollination" />
+
+            <button type="submit" style="margin-top: 10px">Lưu Vườn</button>
+          </form>
+
+          <div
+            style="
+              flex: 1.5;
+              background: white;
+              padding: 25px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+              max-height: 500px;
+              overflow-y: auto;
+            "
+          >
+            <h3 style="margin-bottom: 20px; font-size: 18px; color: #334155">
+              📋 Danh sách vườn hiện có
+            </h3>
+            <table id="manage-garden-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Chủ Vườn</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section id="add-medicine" class="tab-content">
-        <h2>Thêm Thuốc</h2>
-        <form id="form-medicine" onsubmit="submitMedicine(event)">
-          <input type="text" id="m-name" placeholder="Tên thuốc" required />
-          <input
-            type="number"
-            id="m-cycle"
-            placeholder="Chu kỳ nhắc (ngày)"
-            required
-          />
-          <button type="submit">Lưu Thuốc</button>
-        </form>
+        <h2>Quản Lý Thuốc</h2>
+
+        <div style="display: flex; gap: 30px; align-items: flex-start">
+          <form
+            id="form-medicine"
+            onsubmit="submitMedicine(event)"
+            style="
+              flex: 1;
+              background: white;
+              padding: 25px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            "
+          >
+            <h3
+              style="
+                margin-bottom: 20px;
+                font-size: 18px;
+                color: var(--primary-color);
+              "
+            >
+              Thêm Thuốc/Phân bón mới
+            </h3>
+
+            <input type="text" id="m-name" placeholder="Tên thuốc" required />
+            <input
+              type="number"
+              id="m-cycle"
+              placeholder="Chu kỳ nhắc (ngày)"
+              required
+            />
+
+            <button type="submit" style="margin-top: 10px">Lưu Thuốc</button>
+          </form>
+
+          <div
+            style="
+              flex: 1.5;
+              background: white;
+              padding: 25px;
+              border-radius: 12px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+              max-height: 500px;
+              overflow-y: auto;
+            "
+          >
+            <h3 style="margin-bottom: 20px; font-size: 18px; color: #334155">
+              📋 Kho thuốc hiện có
+            </h3>
+            <table id="manage-medicine-table">
+              <thead>
+                <tr>
+                  <th>Tên Thuốc</th>
+                  <th>Chu kỳ</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section id="add-activity" class="tab-content">
@@ -129,12 +252,12 @@
 
           <div class="activity-lists">
             <div class="list-box">
-              <h3>🌿 Chọn Vườn</h3>
+              <h3>Chọn Vườn</h3>
               <ul id="list-gardens" class="selectable-list"></ul>
             </div>
 
             <div class="list-box">
-              <h3>💊 Chọn Thuốc</h3>
+              <h3>Chọn Thuốc/Phân bón</h3>
               <ul id="list-medicines" class="selectable-list"></ul>
             </div>
           </div>

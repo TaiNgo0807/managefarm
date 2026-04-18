@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "localhost"
-    ? "http://localhost:3000/api"
+    ? "http://localhost:8080/api"
     : "/api";
 function toggleMenu() {
   document.getElementById("menu").classList.toggle("show");
@@ -28,11 +28,12 @@ function showTab(tabId) {
 
   if (tabId === "dashboard") loadDashboard();
 
-  // Cứ mở tab Sổ Tay là load mới cả list Vườn và Thuốc
   if (tabId === "add-activity") {
     loadMedicines();
-    loadGardensForList(); // Sửa chỗ này: đổi ForSelect thành ForList nha!
+    loadGardensForList();
   }
+  if (tabId === "add-garden") loadGardensForManage();
+  if (tabId === "add-medicine") loadMedicinesForManage();
 }
 
 // --- CALL API & RENDER ---
@@ -49,16 +50,18 @@ async function loadDashboard() {
 
     if (result.success) {
       result.data.forEach((g) => {
-        // Đổ data vào bảng
-        let statusClass = "status-normal";
-        if (g.days_left < 0) statusClass = "status-danger";
-        else if (g.days_left <= 2) statusClass = "status-warning";
+        let statusClass = "status-none"; // Class CSS mới màu xám
 
-        // Xử lý ngày hiển thị
+        if (g.days_left !== null && g.days_left !== undefined) {
+          statusClass = "status-normal"; // Đổi thành màu xanh nếu đã có thuốc
+          if (g.days_left < 0) statusClass = "status-danger";
+          else if (g.days_left <= 2) statusClass = "status-warning";
+        }
+
         const dateStr = g.action_date
           ? new Date(g.action_date).toLocaleDateString("vi-VN")
           : "Chưa có";
-        // Khúc này dành riêng cho ngày xổ nhụy:
+        //ngày xổ nhụy:
         const pollDateStr = g.pollination_end_date
           ? new Date(g.pollination_end_date).toLocaleDateString("vi-VN")
           : "---";
@@ -73,7 +76,7 @@ async function loadDashboard() {
             </tr>
         `;
         // Check để pop up
-        if (g.status !== "🟢 Bình thường") {
+        if (g.status === "🔴 Quá hạn" || g.status === "🟡 Sắp tới hạn") {
           alerts.push(`- Vườn ${g.id}: ${g.status}`);
         }
       });
@@ -260,7 +263,7 @@ async function loadGardensForList() {
 
     if (result.success) {
       result.data.forEach((g) => {
-        listGarden.innerHTML += `<li id="li-garden-${g.id}" onclick="selectGarden('${g.id}', '${g.owner_name}')">🌿 ${g.id} - ${g.owner_name}</li>`;
+        listGarden.innerHTML += `<li id="li-garden-${g.id}" onclick="selectGarden('${g.id}', '${g.owner_name}')"> ${g.id} - ${g.owner_name}</li>`;
       });
     }
   } catch (error) {
@@ -277,7 +280,7 @@ async function loadMedicines() {
 
     if (result.success) {
       result.data.forEach((med) => {
-        listMedicine.innerHTML += `<li id="li-med-${med.id}" onclick="selectMedicine('${med.id}', '${med.name}')">💊 ${med.name} (${med.cycle_days} ngày)</li>`;
+        listMedicine.innerHTML += `<li id="li-med-${med.id}" onclick="selectMedicine('${med.id}', '${med.name}')"> ${med.name} (${med.cycle_days} ngày)</li>`;
       });
     }
   } catch (error) {
@@ -321,4 +324,64 @@ async function submitActivity(e) {
       .forEach((li) => li.classList.remove("selected"));
     window.hasAlerted = false;
   }
+}
+// --- XÓA VƯỜN ---
+async function deleteGarden(id) {
+  if (
+    !confirm(
+      `Ông chắc chắn muốn xóa vườn ${id} chứ? Mọi lịch sử sẽ mất hết đấy!`,
+    )
+  )
+    return;
+  const res = await fetch(`${API_URL}/gardens/${id}`, { method: "DELETE" });
+  const result = await res.json();
+  alert(result.message);
+  loadGardensForManage(); // Load lại list
+}
+
+// --- XÓA THUỐC ---
+async function deleteMedicine(id) {
+  if (
+    !confirm(`Xóa thuốc này là mất hết lịch sử xịt thuốc liên quan, ok không?`)
+  )
+    return;
+  const res = await fetch(`${API_URL}/medicines/${id}`, { method: "DELETE" });
+  const result = await res.json();
+  alert(result.message);
+  loadMedicinesForManage(); // Load lại list
+}
+
+// --- LOAD DANH SÁCH ĐỂ QUẢN LÝ ---
+async function loadGardensForManage() {
+  const res = await fetch(`${API_URL}/gardens`);
+  const result = await res.json();
+  const tbody = document.querySelector("#manage-garden-table tbody");
+  tbody.innerHTML = result.data
+    .map(
+      (g) => `
+        <tr>
+            <td>${g.id}</td>
+            <td>${g.owner_name}</td>
+            <td><button onclick="deleteGarden('${g.id}')" class="btn-clear">Xóa</button></td>
+        </tr>
+    `,
+    )
+    .join("");
+}
+
+async function loadMedicinesForManage() {
+  const res = await fetch(`${API_URL}/medicines`);
+  const result = await res.json();
+  const tbody = document.querySelector("#manage-medicine-table tbody");
+  tbody.innerHTML = result.data
+    .map(
+      (m) => `
+        <tr>
+            <td>${m.name}</td>
+            <td>${m.cycle_days} ngày</td>
+            <td><button onclick="deleteMedicine(${m.id})" class="btn-clear">Xóa</button></td>
+        </tr>
+    `,
+    )
+    .join("");
 }

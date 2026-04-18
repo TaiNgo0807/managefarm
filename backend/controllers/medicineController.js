@@ -37,3 +37,14 @@ exports.addMedicine = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+exports.deleteMedicine = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Xóa hoạt động liên quan đến thuốc này trước
+    await db.execute("DELETE FROM activities WHERE medicine_id = ?", [id]);
+    await db.execute("DELETE FROM medicines WHERE id = ?", [id]);
+    res.json({ success: true, message: "Thuốc đã bị xóa khỏi kho!" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
