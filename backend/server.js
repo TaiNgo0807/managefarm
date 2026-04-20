@@ -17,6 +17,11 @@ app.use("/api/medicines", medicineRoutes);
 const activityRoutes = require("./routes/activityRoutes");
 app.use("/api/activities", activityRoutes);
 
+//health
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get(/.*/, (req, res) => {
