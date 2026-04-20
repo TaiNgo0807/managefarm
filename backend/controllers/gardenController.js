@@ -19,9 +19,6 @@ exports.getDashboard = async (req, res) => {
         `;
     const [rows] = await db.execute(query);
 
-    // Phân loại trạng thái (Logic chính ông cần)
-    // Phân loại trạng thái đã được fix lỗi null
-    // Phân loại trạng thái chuẩn xác hơn
     const result = rows.map((row) => {
       // Mặc định khi mới thêm vườn (chưa có thuốc)
       let status = "⚪ Chưa có thuốc";

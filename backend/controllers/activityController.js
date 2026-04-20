@@ -21,18 +21,28 @@ exports.addActivity = async (req, res) => {
 };
 // Lấy lịch sử dùng thuốc của 1 vườn cụ thể
 exports.getHistoryByGarden = async (req, res) => {
-  const { garden_id } = req.params; // Lấy ID từ URL
+  const { garden_id } = req.params;
   try {
     const query = `
-            SELECT m.name AS medicine_name, a.action_date,
+            SELECT a.id, a.activity_type, m.name AS medicine_name, a.action_date,
             DATEDIFF(CURDATE(), a.action_date) AS days_passed
             FROM activities a
-            JOIN medicines m ON a.medicine_id = m.id
+            LEFT JOIN medicines m ON a.medicine_id = m.id
             WHERE a.garden_id = ?
             ORDER BY a.action_date DESC
         `;
     const [rows] = await db.execute(query, [garden_id]);
     res.json({ success: true, data: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// Xóa một lịch sử hoạt động
+exports.deleteActivity = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.execute("DELETE FROM activities WHERE id = ?", [id]);
+    res.json({ success: true, message: "Đã xóa lịch sử này!" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

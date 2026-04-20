@@ -192,33 +192,61 @@ async function showGardenDetails(gardenId) {
 
     if (result.success) {
       if (result.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Chưa có lịch sử dùng thuốc nào!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Chưa có lịch sử chăm sóc nào!</td></tr>`;
       } else {
         result.data.forEach((item) => {
           const dateStr = new Date(item.action_date).toLocaleDateString(
             "vi-VN",
           );
+          // Hiển thị loại hoạt động + tên thuốc (nếu có)
+          const activityName = item.medicine_name
+            ? `${item.activity_type} (${item.medicine_name})`
+            : item.activity_type;
+
           tbody.innerHTML += `
                         <tr>
-                            <td><strong>${item.medicine_name}</strong></td>
+                            <td><strong>${activityName}</strong></td>
                             <td>${dateStr}</td>
                             <td><span style="color: #ea580c; font-weight: bold;">${item.days_passed} ngày</span></td>
+                            <td>
+                                <button onclick="deleteActivity(${item.id}, '${gardenId}')"class =" btn-clear">Xóa</button>
+                            </td>
                         </tr>
                     `;
         });
       }
     }
 
-    // Hiện modal lên
     const modal = document.getElementById("garden-modal");
     modal.style.display = "flex";
-    // Delay xíu để CSS transition chạy mượt
     setTimeout(() => {
       modal.classList.add("show");
     }, 10);
   } catch (error) {
     console.error("Lỗi lấy chi tiết:", error);
     alert("Lấy dữ liệu thất bại!");
+  }
+}
+// Gọi API xóa lịch sử và refresh lại Modal + Dashboard
+async function deleteActivity(activityId, gardenId) {
+  if (!confirm("Ông chắc chắn muốn xóa dòng lịch sử này chứ?")) return;
+
+  try {
+    const res = await fetch(`${API_URL}/activities/${activityId}`, {
+      method: "DELETE",
+    });
+    const result = await res.json();
+
+    if (result.success) {
+      // Load lại cái Modal để thấy dòng đó biến mất
+      showGardenDetails(gardenId);
+      // Load lại Dashboard ở chìm bên dưới để lỡ xóa trúng dòng "gần nhất", Dashboard sẽ tự update ngày và trạng thái
+      loadDashboard();
+    } else {
+      alert(result.message);
+    }
+  } catch (error) {
+    console.error("Lỗi xóa lịch sử:", error);
   }
 }
 // --- XỬ LÝ CLICK CHỌN VƯỜN & THUỐC ---
