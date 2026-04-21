@@ -3,8 +3,10 @@ const db = require("../database/db");
 // Lấy danh sách vườn kèm trạng thái nhắc lịch
 exports.getDashboard = async (req, res) => {
   try {
+    // Cập nhật câu query trong hàm getDashboard
     const query = `
             SELECT g.id, g.owner_name, g.plant_type, g.pollination_end_date, 
+                   DATEDIFF(CURDATE(), g.pollination_end_date) AS pollination_days, -- Thêm dòng này để tính ngày
                    a.action_date, m.cycle_days,
                    DATEDIFF(CURDATE(), a.action_date) AS days_passed,
                    (m.cycle_days - DATEDIFF(CURDATE(), a.action_date)) AS days_left

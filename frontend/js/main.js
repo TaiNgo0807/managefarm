@@ -62,8 +62,9 @@ async function loadDashboard() {
           ? new Date(g.action_date).toLocaleDateString("vi-VN")
           : "Chưa có";
         //ngày xổ nhụy:
+        // Sửa đoạn này trong loadDashboard
         const pollDateStr = g.pollination_end_date
-          ? new Date(g.pollination_end_date).toLocaleDateString("vi-VN")
+          ? `${new Date(g.pollination_end_date).toLocaleDateString("vi-VN")} <br><span style="color:#ea580c; font-size:13px;">(Đã ${g.pollination_days} ngày)</span>`
           : "---";
 
         tbody.innerHTML += `
@@ -140,11 +141,19 @@ async function submitMedicine(e) {
 // 4. Ghi Sổ Tay (Hoạt động)
 async function submitActivity(e) {
   e.preventDefault();
+  const gardenId = document.getElementById("a-garden-id").value;
+  if (!gardenId) return alert("Khoan! Ông chưa click chọn Vườn nào kìa!");
+
+  // APP TỰ ĐỘNG NHẬN DIỆN LOẠI HOẠT ĐỘNG
+  const autoType =
+    selectedMedicines.length > 0
+      ? "Phun thuốc/Bón phân"
+      : "Chăm sóc (Tưới, Tỉa)";
+
   const data = {
-    garden_id: document.getElementById("a-garden").value,
-    activity_type: document.getElementById("a-type").value,
+    garden_id: gardenId,
     action_date: document.getElementById("a-date").value,
-    medicine_id: document.getElementById("a-medicine").value || null,
+    medicine_ids: selectedMedicines.map((m) => m.id),
   };
 
   const res = await fetch(`${API_URL}/activities/add`, {
@@ -198,10 +207,11 @@ async function showGardenDetails(gardenId) {
           const dateStr = new Date(item.action_date).toLocaleDateString(
             "vi-VN",
           );
-          // Hiển thị loại hoạt động + tên thuốc (nếu có)
+
+          // Logic mới: Có thuốc hiện thuốc, ko có thì ghi là tưới dọn
           const activityName = item.medicine_name
-            ? `${item.activity_type} (${item.medicine_name})`
-            : item.activity_type;
+            ? `${item.medicine_name}`
+            : `💧 Chăm sóc mộc (Tưới, Tỉa)`;
 
           tbody.innerHTML += `
                         <tr>
@@ -209,7 +219,7 @@ async function showGardenDetails(gardenId) {
                             <td>${dateStr}</td>
                             <td><span style="color: #ea580c; font-weight: bold;">${item.days_passed} ngày</span></td>
                             <td>
-                                <button onclick="deleteActivity(${item.id}, '${gardenId}')"class =" btn-clear">Xóa</button>
+                                <button onclick="deleteActivity(${item.id}, '${gardenId}')" style="background:#ef4444; padding:5px 10px; font-size:12px;">Xóa</button>
                             </td>
                         </tr>
                     `;
@@ -229,7 +239,7 @@ async function showGardenDetails(gardenId) {
 }
 // Gọi API xóa lịch sử và refresh lại Modal + Dashboard
 async function deleteActivity(activityId, gardenId) {
-  if (!confirm("Ông chắc chắn muốn xóa dòng lịch sử này chứ?")) return;
+  if (!confirm("Bạn chắc chắn muốn xóa dòng lịch sử này chứ?")) return;
 
   try {
     const res = await fetch(`${API_URL}/activities/${activityId}`, {
@@ -253,29 +263,42 @@ async function deleteActivity(activityId, gardenId) {
 function selectGarden(id, name) {
   document.getElementById("a-garden-id").value = id;
   document.getElementById("display-garden").innerText = `${id} - ${name}`;
-
-  // Đổi màu để nhận diện mục đang chọn
   document
     .querySelectorAll("#list-gardens li")
     .forEach((li) => li.classList.remove("selected"));
   document.getElementById(`li-garden-${id}`).classList.add("selected");
 }
 
-function selectMedicine(id, name) {
-  document.getElementById("a-medicine-id").value = id;
-  document.getElementById("display-medicine").innerText = name;
+// Khai báo mảng chứa thuốc
+let selectedMedicines = [];
 
-  document
-    .querySelectorAll("#list-medicines li")
-    .forEach((li) => li.classList.remove("selected"));
-  document.getElementById(`li-med-${id}`).classList.add("selected");
+function selectMedicine(id, name) {
+  const li = document.getElementById(`li-med-${id}`);
+
+  // Kiểm tra xem thuốc này đã chọn chưa
+  const index = selectedMedicines.findIndex((m) => m.id === id);
+  if (index > -1) {
+    // Đã chọn rồi -> Bấm phát nữa là Hủy chọn
+    selectedMedicines.splice(index, 1);
+    li.classList.remove("selected");
+  } else {
+    // Chưa chọn -> Thêm vào danh sách
+    selectedMedicines.push({ id, name });
+    li.classList.add("selected");
+  }
+
+  // Cập nhật lên màn hình
+  const display = document.getElementById("display-medicine");
+  if (selectedMedicines.length > 0) {
+    display.innerText = selectedMedicines.map((m) => m.name).join(" + "); // Dùng dấu + cho giống pha thuốc
+  } else {
+    display.innerText = "Chưa chọn";
+  }
 }
 
-// Bón phân/Tưới nước thì không cần thuốc
 function clearMedicine() {
-  document.getElementById("a-medicine-id").value = "";
-  document.getElementById("display-medicine").innerText =
-    "Chưa chọn (Không bắt buộc)";
+  selectedMedicines = []; // Xóa trắng mảng
+  document.getElementById("display-medicine").innerText = "Chưa chọn";
   document
     .querySelectorAll("#list-medicines li")
     .forEach((li) => li.classList.remove("selected"));
@@ -319,18 +342,14 @@ async function loadMedicines() {
 // --- SUBMIT GHI SỔ TAY ---
 async function submitActivity(e) {
   e.preventDefault();
-
   const gardenId = document.getElementById("a-garden-id").value;
-  if (!gardenId) {
-    alert("Khoan! Ông chưa click chọn Vườn nào bên danh sách kìa!");
-    return;
-  }
+  if (!gardenId) return alert("Bạn chưa click chọn Vườn nào kìa!");
 
   const data = {
     garden_id: gardenId,
-    activity_type: document.getElementById("a-type").value,
     action_date: document.getElementById("a-date").value,
-    medicine_id: document.getElementById("a-medicine-id").value || null,
+    // Ép mảng chứa các ID thuốc (chỉ lấy ID gửi lên Backend)
+    medicine_ids: selectedMedicines.map((m) => m.id),
   };
 
   const res = await fetch(`${API_URL}/activities/add`, {
@@ -338,15 +357,14 @@ async function submitActivity(e) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
+
   const result = await res.json();
   alert(result.message);
-
   if (result.success) {
-    // Reset sạch sẽ form sau khi thêm
     document.getElementById("form-activity").reset();
     document.getElementById("a-garden-id").value = "";
     document.getElementById("display-garden").innerText = "Chưa chọn";
-    clearMedicine();
+    clearMedicine(); // Xóa sạch danh sách thuốc vừa pha
     document
       .querySelectorAll(".selectable-list li")
       .forEach((li) => li.classList.remove("selected"));
@@ -357,7 +375,7 @@ async function submitActivity(e) {
 async function deleteGarden(id) {
   if (
     !confirm(
-      `Ông chắc chắn muốn xóa vườn ${id} chứ? Mọi lịch sử sẽ mất hết đấy!`,
+      `Bạn chắc chắn muốn xóa vườn ${id} chứ? Mọi lịch sử sẽ mất hết đấy!`,
     )
   )
     return;

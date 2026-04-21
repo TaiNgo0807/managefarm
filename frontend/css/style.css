@@ -485,3 +485,88 @@ td strong {
   background-color: var(--primary-color);
   color: var(--card-bg);
 }
+/* =========================================
+   📱 ĐÁP ỨNG GIAO DIỆN ĐIỆN THOẠI (RESPONSIVE)
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+  /* 1. Ép tất cả layout 2 cột thành 1 cột (Trên - Dưới) */
+  .activity-container,
+  .activity-lists,
+  .tab-content > div[style*="display: flex"] {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  /* Bắt các form và danh sách bung rộng 100% màn hình điện thoại */
+  .activity-form,
+  .activity-lists,
+  .list-box,
+  .tab-content > div[style*="display: flex"] > form,
+  .tab-content > div[style*="display: flex"] > div {
+    width: 100% !important;
+    flex: none !important;
+    padding: 15px !important; /* Giảm padding cho đỡ chiếm diện tích */
+    box-sizing: border-box;
+  }
+
+  /* 2. Trị bệnh "Bảng tràn màn hình" */
+  /* Tuyệt chiêu: Giữ nguyên size bảng, nhưng cho phép "Vuốt ngang" vùng chứa nó */
+  .tab-content > div[style*="display: flex"] > div,
+  .tab-content {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch; /* Vuốt mượt trên iPhone */
+  }
+
+  table {
+    min-width: 500px; /* Ép bảng không bị bóp méo, thiếu chỗ thì vuốt ngang */
+  }
+
+  /* 3. Thu gọn Modal (Popup lịch sử) */
+  .modal-content {
+    width: 95% !important;
+    padding: 15px !important;
+    margin: 10px auto;
+  }
+
+  /* Cột lịch sử trong modal cũng cho vuốt ngang */
+  .modal-body {
+    overflow-x: auto;
+  }
+
+  #history-table {
+    min-width: 400px;
+  }
+
+  /* 4. Giảm cỡ chữ xíu cho đỡ ngộp */
+  h2 {
+    font-size: 22px !important;
+  }
+  h3 {
+    font-size: 18px !important;
+  }
+
+  input,
+  select,
+  button {
+    font-size: 16px !important; /* Chuẩn UX mobile: Font input phải >= 16px để iOS ko tự zoom */
+  }
+}
+
+/* Màn hình cực nhỏ (iPhone SE, dòng Mini...) */
+@media screen and (max-width: 480px) {
+  /* Nếu bạn có các nút Menu dàn ngang trên cùng, ép nó rớt dòng luôn */
+  .menu,
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .menu button,
+  nav button {
+    flex: 1 1 calc(50% - 10px); /* Chia 2 nút 1 hàng */
+    padding: 12px 5px;
+    font-size: 13px !important;
+  }
+}

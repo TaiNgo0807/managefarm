@@ -49,9 +49,9 @@
         <table id="garden-table">
           <thead>
             <tr>
-              <th>ID Vườn</th>
+              <th>ID Vườn (Địa chỉ)</th>
               <th>Chủ Vườn</th>
-              <th>Loại Cây</th>
+              <th>Loại Cây (Loại giống)</th>
               <th>Ngày dứt xổ nhụy</th>
               <th>Ngày sử dụng thuốc cuối</th>
               <th>Trạng thái</th>
@@ -88,7 +88,7 @@
             <input
               type="text"
               id="g-id"
-              placeholder="ID Vườn (VD: V01)"
+              placeholder="ID Vườn (Địa chỉ)"
               required
             />
             <input
@@ -132,7 +132,7 @@
             <table id="manage-garden-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>ID Vườn (Địa chỉ)</th>
                   <th>Chủ Vườn</th>
                   <th>Hành động</th>
                 </tr>
@@ -231,16 +231,10 @@
                 <strong
                   id="display-medicine"
                   style="color: var(--primary-color)"
-                  >Chưa chọn (Không bắt buộc)</strong
+                  >Chưa chọn</strong
                 >
               </p>
             </div>
-
-            <select id="a-type" required>
-              <option value="Phun thuốc">Phun thuốc</option>
-              <option value="Bón phân">Bón phân</option>
-              <option value="Tưới gốc">Tưới gốc</option>
-            </select>
 
             <input type="date" id="a-date" required />
 
@@ -273,7 +267,7 @@
           <table id="history-table">
             <thead>
               <tr>
-                <th>Hoạt động</th>
+                <th>Thuốc/Phân bón</th>
                 <th>Ngày thao tác</th>
                 <th>Đã qua</th>
                 <th>Hành động</th>
