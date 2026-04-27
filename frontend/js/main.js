@@ -101,11 +101,9 @@ async function submitGarden(e) {
     owner_name: document.getElementById("g-owner").value,
     plant_type: document.getElementById("g-plant").value,
     plant_year: document.getElementById("g-year").value,
-    // Thêm dòng này để lấy giá trị ngày:
     pollination_end_date:
       document.getElementById("g-pollination").value || null,
   };
-  // ... phần fetch giữ nguyên ...
 
   const res = await fetch(`${API_URL}/gardens/add`, {
     method: "POST",
@@ -114,7 +112,11 @@ async function submitGarden(e) {
   });
   const result = await res.json();
   alert(result.message);
-  if (result.success) document.getElementById("form-garden").reset();
+  if (result.success) {
+    document.getElementById("form-garden").reset();
+    loadGardensForManage();
+    loadDashboard();
+  }
 }
 
 // 3. Thêm Thuốc
@@ -134,6 +136,7 @@ async function submitMedicine(e) {
   alert(result.message);
   if (result.success) {
     document.getElementById("form-medicine").reset();
+    loadMedicinesForManage();
     loadMedicines(); // Load lại ngay và luôn
   }
 }
@@ -218,7 +221,7 @@ async function showGardenDetails(gardenId) {
                             <td><strong>${activityName}</strong></td>
                             <td>${dateStr}</td>
                             <td><span style="color: #ea580c; font-weight: bold;">${item.days_passed} ngày</span></td>
-                            <td>
+                   sub         <td>
                                 <button onclick="deleteActivity(${item.id}, '${gardenId}')" class="btn-clear">Xóa</button>
                             </td>
                         </tr>

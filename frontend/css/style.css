@@ -566,4 +566,124 @@ td strong {
     max-height: 90vh;
     overflow-y: auto;
   }
+  /* --- BIẾN BẢNG DASHBOARD THÀNH DẠNG CARD (KHÔNG CẦN VUỐT NGANG) --- */
+
+  /* 1. Ẩn thanh tiêu đề trên cùng của bảng */
+  #garden-table thead {
+    display: none;
+  }
+
+  /* 2. Ép mỗi hàng thành 1 cái thẻ bo góc */
+  #garden-table tbody tr {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+  }
+  #garden-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  #garden-table tbody {
+    display: block;
+    width: 100%;
+  }
+  /* 3. Chia ô: Chữ nằm bên phải, Nhãn nằm bên trái */
+  #garden-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 5px;
+    border-bottom: 1px dashed #f1f5f9;
+    text-align: right;
+  }
+
+  #garden-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  /* 4. Tự động thêm nhãn (Label) cho từng dòng để dễ đọc */
+  #garden-table tbody td:nth-child(1)::before {
+    content: "ID Vườn:";
+    font-weight: bold;
+    color: #475569;
+  }
+  #garden-table tbody td:nth-child(2)::before {
+    content: "Chủ vườn:";
+    font-weight: bold;
+    color: #475569;
+  }
+  #garden-table tbody td:nth-child(3)::before {
+    content: "Trạng thái:";
+    font-weight: bold;
+    color: #475569;
+  }
+  #garden-table tbody td:nth-child(4)::before {
+    content: "Ngày làm:";
+    font-weight: bold;
+    color: #475569;
+  }
+  /* --- BIẾN BẢNG LỊCH SỬ (POPUP) THÀNH CARD LUÔN --- */
+
+  /* 1. Ẩn tiêu đề cột của bảng popup */
+  #history-table thead {
+    display: none;
+  }
+
+  /* 2. Biến mỗi dòng lịch sử thành 1 thẻ bo góc */
+  #history-table tbody tr {
+    display: block;
+    background: #f8fafc;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+  }
+  #history-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  #history-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  /* 3. Dàn chữ sang 2 bên cho dễ nhìn */
+  #history-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #cbd5e1;
+    text-align: right;
+  }
+
+  /* Nút xóa ở dòng cuối thì đẩy sang phải luôn, khỏi cần viền dưới */
+  #history-table tbody td:last-child {
+    border-bottom: none;
+    justify-content: flex-end;
+  }
+
+  /* 4. Gắn nhãn cho từng dòng để ông kỹ sư dễ đọc */
+  #history-table tbody td:nth-child(1)::before {
+    content: "Hoạt động:";
+    font-weight: bold;
+    color: #475569;
+  }
+  #history-table tbody td:nth-child(2)::before {
+    content: "Ngày làm:";
+    font-weight: bold;
+    color: #475569;
+  }
+  #history-table tbody td:nth-child(3)::before {
+    content: "Đã qua:";
+    font-weight: bold;
+    color: #475569;
+  }
 }
