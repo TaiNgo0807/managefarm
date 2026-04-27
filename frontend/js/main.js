@@ -219,7 +219,7 @@ async function showGardenDetails(gardenId) {
                             <td>${dateStr}</td>
                             <td><span style="color: #ea580c; font-weight: bold;">${item.days_passed} ngày</span></td>
                             <td>
-                                <button onclick="deleteActivity(${item.id}, '${gardenId}')" style="background:#ef4444; padding:5px 10px; font-size:12px;">Xóa</button>
+                                <button onclick="deleteActivity(${item.id}, '${gardenId}')" class="btn-clear">Xóa</button>
                             </td>
                         </tr>
                     `;
